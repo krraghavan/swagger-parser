@@ -2108,6 +2108,7 @@ public class OpenAPIDeserializerTest {
     SwaggerParseResult result = parser.readContents(yaml, null, null);
     Map<String, Schema> properties = result.getOpenAPI().getComponents().getSchemas().get("Pet").getProperties();
     assertTrue(properties.containsKey("description"));
+    assertEquals(properties.get("description").get$ref(), "#/components/PetDescription");
     assertEquals(properties.get("description").getExtensions().get("x-trained"), true);
   }
 
