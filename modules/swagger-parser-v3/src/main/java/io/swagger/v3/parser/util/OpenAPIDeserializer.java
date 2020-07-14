@@ -2143,6 +2143,10 @@ public class OpenAPIDeserializer {
                 }else{
                     schema.set$ref(ref.asText());
                 }
+                Map<String,Object> extensions = getExtensions(node);
+                if(extensions != null && extensions.size() > 0) {
+                  schema.setExtensions(extensions);
+                }
                 return schema;
             } else {
                 result.invalidType(location, "$ref", "string", node);

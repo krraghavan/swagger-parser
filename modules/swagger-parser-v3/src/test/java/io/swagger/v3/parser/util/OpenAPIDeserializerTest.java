@@ -2081,6 +2081,36 @@ public class OpenAPIDeserializerTest {
 
     }
 
+  @Test
+  public void testDeserializeWithExtensionsInRefSchema() {
+    String yaml =
+      "openapi: 3.0.0\n" +
+        "components:\n" +
+        "  schemas:\n" +
+        "    Pet:\n" +
+        "      type: object\n" +
+        "      properties:\n" +
+        "        name:\n" +
+        "          type: string\n" +
+        "        description:\n" +
+        "          $ref: '#/components/PetDescription'\n" +
+        "          x-trained: true\n" +
+        "    PetDescription:\n" +
+        "      type: object\n" +
+        "      properties:\n" +
+        "        species:\n" +
+        "          type: string\n" +
+        "        age:\n" +
+        "          type: integer\n" +
+        "        gender:\n" +
+        "          type: string\n";
+    OpenAPIV3Parser parser = new OpenAPIV3Parser();
+    SwaggerParseResult result = parser.readContents(yaml, null, null);
+    Map<String, Schema> properties = result.getOpenAPI().getComponents().getSchemas().get("Pet").getProperties();
+    assertTrue(properties.containsKey("description"));
+    assertEquals(properties.get("description").getExtensions().get("x-trained"), true);
+  }
+
     @Test
     public void testEmpty(@Injectable List<AuthorizationValue> auths) {
         String json = "{}";
