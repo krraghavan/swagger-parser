@@ -97,9 +97,9 @@ You can include this library from Sonatype OSS for SNAPSHOTS, or Maven central f
 
 ```xml
 <dependency>
-  <groupId>io.swagger.parser.v3</groupId>
+  <groupId>com.github.krraghavan</groupId>
   <artifactId>swagger-parser</artifactId>
-  <version>2.0.12</version>
+  <version>2.0.12.1-RELEASE</version>
 </dependency>
 ```
 
