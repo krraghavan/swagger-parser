@@ -1468,6 +1468,10 @@ public class OpenAPIDeserializer {
                 }else{
                     parameter.set$ref(ref.textValue());
                 }
+                Map <String,Object> extensions = getExtensions(obj);
+                if(extensions != null && extensions.size() > 0) {
+                  parameter.setExtensions(extensions);
+                }
                 return parameter;
             } else {
                 result.invalidType(location, "$ref", "string", obj);
@@ -2143,6 +2147,10 @@ public class OpenAPIDeserializer {
                 }else{
                     schema.set$ref(ref.asText());
                 }
+                Map<String,Object> extensions = getExtensions(node);
+                if(extensions != null && extensions.size() > 0) {
+                  schema.setExtensions(extensions);
+                }
                 return schema;
             } else {
                 result.invalidType(location, "$ref", "string", node);
@@ -2711,7 +2719,11 @@ public class OpenAPIDeserializer {
                 }else{
                     apiResponse.set$ref(ref.textValue());
                 }
-                 return apiResponse;
+                Map <String,Object> extensions = getExtensions(node);
+                if (extensions != null && extensions.size() > 0) {
+                  apiResponse.setExtensions(extensions);
+                }
+                return apiResponse;
             } else {
                 result.invalidType(location, "$ref", "string", node);
                 return null;
