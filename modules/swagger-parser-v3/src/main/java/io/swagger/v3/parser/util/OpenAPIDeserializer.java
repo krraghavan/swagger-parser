@@ -2957,6 +2957,10 @@ public class OpenAPIDeserializer {
                 }else{
                     body.set$ref(ref.textValue());
                 }
+                Map <String,Object> extensions = getExtensions(node);
+                if(extensions != null && extensions.size() > 0) {
+                  body.setExtensions(extensions);
+                }
                 return body;
             } else {
                 result.invalidType(location, "$ref", "string", node);
