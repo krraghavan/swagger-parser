@@ -2187,6 +2187,44 @@ public class OpenAPIDeserializerTest {
         assertEquals(parameter.getExtensions().get("x-pet-database-key"), "PetIdentifier");
     }
 
+  @Test
+  public void testDeserializeWithExtensionsInRefRequestBody() {
+    String yaml = "openapi: 3.0.0\n" +
+      "paths:\n" +
+      "  /pet:\n" +
+      "    post:\n" +
+      "      operationId: addPet\n" +
+      "      description: Add pet to petstore\n" +
+      "      requestBody:\n" +
+      "        $ref: '#/components/requestBodies/PetContent'\n" +
+      "        x-content-type: Pet\n" +
+      "      responses:\n" +
+      "        204:\n" +
+      "          description: Successful operation\n" +
+      "components:\n" +
+      "  requestBodies:\n" +
+      "    PetContent:\n" +
+      "      description: Pet request content\n" +
+      "      required: true\n" +
+      "      content:\n" +
+      "        application/json:\n" +
+      "          schema:\n" +
+      "            $ref: '#/components/schemas/Pet'\n" +
+      "  schemas:\n" +
+      "    Pet:\n" +
+      "      type: object\n" +
+      "      properties:\n" +
+      "        name:\n" +
+      "          type: string\n" +
+      "        species:\n" +
+      "          type: string\n";
+    OpenAPIV3Parser parser = new OpenAPIV3Parser();
+    SwaggerParseResult result = parser.readContents(yaml, null, null);
+    RequestBody body = result.getOpenAPI().getPaths().get("/pet").getPost().getRequestBody();
+    assertEquals(body.get$ref(), "#/components/requestBodies/PetContent");
+    assertEquals(body.getExtensions().get("x-content-type"), "Pet");
+  }
+
     @Test
     public void testEmpty(@Injectable List<AuthorizationValue> auths) {
         String json = "{}";

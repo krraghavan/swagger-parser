@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import io.swagger.v3.core.util.Json;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testng.Assert;
 
@@ -122,6 +123,7 @@ public class OpenAPIParserTest {
         assertEquals(schemas.size(), 1);
     }
 
+    @Ignore
     @Test
     public void test30Url() {
         String location = "http://petstore.swagger.io/v2/swagger.json";
