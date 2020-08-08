@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.parser.ResolverCache;
 import io.swagger.v3.parser.models.RefFormat;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,12 @@ public class OperationProcessor {
                         ApiResponse resolvedResponse = cache.loadRef(response.get$ref(), refFormat, ApiResponse.class);
 
                         if (resolvedResponse != null) {
+                            if (response.getExtensions() != null) {
+                              if (resolvedResponse.getExtensions() == null) {
+                                resolvedResponse.setExtensions(new LinkedHashMap<>());
+                              }
+                              resolvedResponse.getExtensions().putAll(response.getExtensions());
+                            }
                             response = resolvedResponse;
                             responses.put(responseCode, resolvedResponse);
                         }

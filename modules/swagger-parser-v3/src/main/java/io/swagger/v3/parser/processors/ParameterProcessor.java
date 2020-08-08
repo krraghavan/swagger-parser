@@ -9,9 +9,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.ResolverCache;
 import io.swagger.v3.parser.models.RefFormat;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.swagger.v3.parser.util.RefUtils.computeRefFormat;
 import static io.swagger.v3.parser.util.RefUtils.isAnExternalRefFormat;
@@ -93,6 +91,14 @@ public class ParameterProcessor {
                     // can't resolve it!
                     processedPathLevelParameters.add(parameter);
                     continue;
+                }
+
+                // copy extensions from parameter to resolvedParameter
+                if (parameter.getExtensions() != null) {
+                  if (resolvedParameter.getExtensions() == null) {
+                    resolvedParameter.setExtensions(new LinkedHashMap<>());
+                  }
+                  resolvedParameter.getExtensions().putAll(parameter.getExtensions());
                 }
                 // if the parameter exists, replace it
                 boolean matched = false;

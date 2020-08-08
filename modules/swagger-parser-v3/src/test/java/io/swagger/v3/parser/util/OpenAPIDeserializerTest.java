@@ -2187,43 +2187,93 @@ public class OpenAPIDeserializerTest {
         assertEquals(parameter.getExtensions().get("x-pet-database-key"), "PetIdentifier");
     }
 
-  @Test
-  public void testDeserializeWithExtensionsInRefRequestBody() {
-    String yaml = "openapi: 3.0.0\n" +
-      "paths:\n" +
-      "  /pet:\n" +
-      "    post:\n" +
-      "      operationId: addPet\n" +
-      "      description: Add pet to petstore\n" +
-      "      requestBody:\n" +
-      "        $ref: '#/components/requestBodies/PetContent'\n" +
-      "        x-content-type: Pet\n" +
-      "      responses:\n" +
-      "        204:\n" +
-      "          description: Successful operation\n" +
-      "components:\n" +
-      "  requestBodies:\n" +
-      "    PetContent:\n" +
-      "      description: Pet request content\n" +
-      "      required: true\n" +
-      "      content:\n" +
-      "        application/json:\n" +
-      "          schema:\n" +
-      "            $ref: '#/components/schemas/Pet'\n" +
-      "  schemas:\n" +
-      "    Pet:\n" +
-      "      type: object\n" +
-      "      properties:\n" +
-      "        name:\n" +
-      "          type: string\n" +
-      "        species:\n" +
-      "          type: string\n";
-    OpenAPIV3Parser parser = new OpenAPIV3Parser();
-    SwaggerParseResult result = parser.readContents(yaml, null, null);
-    RequestBody body = result.getOpenAPI().getPaths().get("/pet").getPost().getRequestBody();
-    assertEquals(body.get$ref(), "#/components/requestBodies/PetContent");
-    assertEquals(body.getExtensions().get("x-content-type"), "Pet");
-  }
+    @Test
+    public void testDeserializeWithExtensionsInRefRequestBody() {
+        String yaml = "openapi: 3.0.0\n" +
+                "paths:\n" +
+                "  /pet:\n" +
+                "    post:\n" +
+                "      operationId: addPet\n" +
+                "      description: Add pet to petstore\n" +
+                "      requestBody:\n" +
+                "        $ref: '#/components/requestBodies/PetContent'\n" +
+                "        x-content-type: Pet\n" +
+                "      responses:\n" +
+                "        204:\n" +
+                "          description: Successful operation\n" +
+                "components:\n" +
+                "  requestBodies:\n" +
+                "    PetContent:\n" +
+                "      description: Pet request content\n" +
+                "      required: true\n" +
+                "      content:\n" +
+                "        application/json:\n" +
+                "          schema:\n" +
+                "            $ref: '#/components/schemas/Pet'\n" +
+                "  schemas:\n" +
+                "    Pet:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        name:\n" +
+                "          type: string\n" +
+                "        species:\n" +
+                "          type: string\n";
+        OpenAPIV3Parser parser = new OpenAPIV3Parser();
+        SwaggerParseResult result = parser.readContents(yaml, null, null);
+        RequestBody body = result.getOpenAPI().getPaths().get("/pet").getPost().getRequestBody();
+        assertEquals(body.get$ref(), "#/components/requestBodies/PetContent");
+        assertEquals(body.getExtensions().get("x-content-type"), "Pet");
+    }
+
+    @Test
+    public void testDeserializeWithResolveOption() {
+        String yaml = "openapi: 3.0.0\n" +
+                "paths:\n" +
+                "  /pet:\n" +
+                "    get:\n" +
+                "      operationId: getPet\n" +
+                "      parameters:\n" +
+                "        - $ref: '#/components/parameters/Id'\n" +
+                "          x-pet-database-key: PetIdentifier\n" +
+                "      responses:\n" +
+                "        200:\n" +
+                "          $ref: '#/components/responses/PetResponse'\n" +
+                "          x-content-model: Pet\n" +
+                "components:\n" +
+                "  parameters:\n" +
+                "    Id:\n" +
+                "      name: PetId\n" +
+                "      in: query\n" +
+                "      required: true\n" +
+                "      schema:\n" +
+                "        type: string\n" +
+                "  responses:\n" +
+                "    PetResponse:\n" +
+                "      description: Get pet api response\n" +
+                "      content:\n" +
+                "        application/json:\n" +
+                "          schema:\n" +
+                "            $ref: '#/components/schemas/Pet'\n" +
+                "  schemas:\n" +
+                "    Pet:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        name:\n" +
+                "          type: string\n" +
+                "        species:\n" +
+                "          type: string\n";
+        ParseOptions options = new ParseOptions();
+        options.setResolve(true);
+        OpenAPIV3Parser parser = new OpenAPIV3Parser();
+        SwaggerParseResult result = parser.readContents(yaml, null, options);
+        Operation getOperation = result.getOpenAPI().getPaths().get("/pet").getGet();
+        Parameter parameter = getOperation.getParameters().get(0);
+        assertEquals(parameter.getName(), "PetId");
+        assertEquals(parameter.getExtensions().get("x-pet-database-key"), "PetIdentifier");
+        ApiResponse response = getOperation.getResponses().get("200");
+        assertEquals(response.getDescription(), "Get pet api response");
+        assertEquals(response.getExtensions().get("x-content-model"), "Pet");
+    }
 
     @Test
     public void testEmpty(@Injectable List<AuthorizationValue> auths) {
